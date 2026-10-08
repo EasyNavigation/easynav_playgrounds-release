@@ -1,0 +1,12 @@
+Source: ros-lyrical-easynav-playground-kobuki
+Section: misc
+Priority: optional
+Maintainer: "Francisco Martín Rico" <fmrico@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), ros-lyrical-ament-cmake, ros-lyrical-ament-lint-auto <!nocheck>, ros-lyrical-ament-lint-common <!nocheck>, ros-lyrical-ros-workspace
+Homepage: https://index.ros.org/p/easynav_playground_kobuki/#lyrical
+Standards-Version: 3.9.2
+
+Package: ros-lyrical-easynav-playground-kobuki
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3-yaml, ros-lyrical-ament-index-python, ros-lyrical-easynav-costmap-localizer, ros-lyrical-easynav-costmap-maps-manager, ros-lyrical-easynav-costmap-planner, ros-lyrical-easynav-diagnostic-recovery, ros-lyrical-easynav-interfaces, ros-lyrical-easynav-mhamcl-localizer, ros-lyrical-easynav-mpc-controller, ros-lyrical-easynav-mppi-controller, ros-lyrical-easynav-playground-kobuki-worlds, ros-lyrical-easynav-regulated-pp-controller, ros-lyrical-easynav-routes-maps-manager, ros-lyrical-easynav-serest-controller, ros-lyrical-easynav-simple-controller, ros-lyrical-easynav-simple-localizer, ros-lyrical-easynav-simple-maps-manager, ros-lyrical-easynav-simple-planner, ros-lyrical-easynav-simple-recovery, ros-lyrical-easynav-system, ros-lyrical-launch, ros-lyrical-launch-ros, ros-lyrical-launch-yaml, ros-lyrical-ros2topic, ros-lyrical-rviz2, ros-lyrical-ros-workspace
+Description: Easy Navigation playground with a Kobuki: EasyNav configurations and launchers for the Kobuki simulation (costmap with RPP, MPPI, MPC, SeReST, MH-AMCL, routes and safety mode; Simple; mapping; multirobot).
