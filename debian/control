@@ -1,0 +1,12 @@
+Source: ros-jazzy-easynav-playground-kobuki-description
+Section: misc
+Priority: optional
+Maintainer: "Francisco Martín Rico" <fmrico@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), ros-jazzy-ament-cmake, ros-jazzy-ament-lint-auto <!nocheck>, ros-jazzy-ament-lint-common <!nocheck>, ros-jazzy-ros-workspace
+Homepage: https://index.ros.org/p/easynav_playground_kobuki_description/#jazzy
+Standards-Version: 3.9.2
+
+Package: ros-jazzy-easynav-playground-kobuki-description
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-jazzy-xacro, ros-jazzy-ros-workspace
+Description: Kobuki (Turtlebot 2) robot description for the EasyNav playgrounds: URDF and meshes, from kobuki_ros.
