@@ -3,35 +3,13 @@ Copyright 2026 Intelligent Robotics Lab
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# EasyNav PlayGrounds
+# EasyNav Kobuki Playground: worlds
 
-Complete Gazebo simulations integrated with [EasyNav](https://github.com/EasyNavigation/EasyNavigation): a robot, its worlds, their maps and ready-to-run EasyNav configurations. They are the reference configurations of EasyNav, and a good starting point for your own robot's parameters.
-
-Each playground is split in three packages, so that the robot model and the simulation can be used without EasyNav:
-
-| Package | Contents | Depends on |
-| --- | --- | --- |
-| `easynav_playground_<robot>_description` | The robot model: URDF, meshes and controllers | Neither Gazebo nor EasyNav |
-| `easynav_playground_<robot>_worlds` | The Gazebo simulation: worlds, their maps, and the launchers that spawn the robot with its controllers and the ROS–Gazebo bridge | Gazebo, not EasyNav |
-| `easynav_playground_<robot>` | The EasyNav configurations and launchers | EasyNav |
-
-| Directory | Robot and worlds | EasyNav configurations |
-| --- | --- | --- |
-| [`playground_kobuki`](playground_kobuki/easynav_playground_kobuki) | Kobuki (Turtlebot 2) in a small house (**indoor reference**) | Costmap (RPP, MPPI, MPC, SeReST, MH-AMCL, routes, safety mode), Simple, mapping, multirobot |
-| [`playground_summit`](playground_summit/easynav_playground_summit) | Robotnik Summit XL in an outdoor excavation and an indoor warehouse (**outdoor reference**) | NavMap and Bonxai (RPP, MPPI, MPC), GPS fusion, warehouse logistics |
-| [`playground_tiago`](playground_tiago/easynav_playground_tiago) | PAL Robotics' TIAGo in a small house | Costmap with RPP; NavMap and Bonxai with the laser and the RGBD camera |
-| [`playground_omni`](playground_omni/easynav_playground_omni) | Three- to six-wheel omnidirectional robots in two mazes | Costmap with RPP |
-
-For example, with the Kobuki:
-
-```bash
-ros2 launch easynav_playground_kobuki easynav_costmap_rpp.launch.yaml        # Gazebo, the Kobuki, EasyNav and RViz2
-ros2 launch easynav_playground_kobuki_worlds gazebo_sim.launch.yaml          # Only Gazebo and the Kobuki
-```
+Gazebo Harmonic simulation of a Kobuki (Turtlebot 2) in the AWS RoboMaker small house: the world and its models, the map of the house, and the launchers that start Gazebo and spawn one or several Kobukis (robot state publisher and ROS–Gazebo bridge). It does not depend on EasyNav: `easynav_playground_kobuki` adds the navigation.
 
 ## Supported ROS 2 distributions
 
-The playgrounds need Gazebo Harmonic or newer, so they run on Jazzy and later distributions, but not on Humble, whose Gazebo is Fortress. EasyNav itself (core and plugins) does run on Humble: only these simulations do not.
+This playground needs Gazebo Harmonic or newer, so it runs on Jazzy and later distributions, but not on Humble, whose Gazebo is Fortress. EasyNav itself (core and plugins) does run on Humble: only this simulation does not.
 
 ## Build
 
@@ -39,10 +17,37 @@ From the ROS 2 workspace root:
 
 ```bash
 rosdep install --from-paths src --ignore-src -r -y
-colcon build --symlink-install --packages-up-to easynav_playground_kobuki   # or any other playground
+colcon build --symlink-install --packages-up-to easynav_playground_kobuki_worlds
 source install/setup.bash
 ```
 
-## Licensing
+## Simulation
 
-Each package declares its licenses in its `package.xml` and explains them in its README. The EasyNav configurations and launchers are by the [Intelligent Robotics Lab](https://intelligentroboticslab.gsyc.urjc.es/) (Universidad Rey Juan Carlos), under Apache-2.0. The robot models and the worlds come from third parties under their own licenses: Yujin Robot's Kobuki (BSD-3-Clause), Robotnik's Summit XL (BSD-3-Clause), PAL Robotics' TIAGo (Apache-2.0), Yohan Prakoso's omnidirectional robots (MIT), AWS RoboMaker's small house and small warehouse (MIT-0) and the URJC excavation (GPL-3.0).
+To run Gazebo and the Kobuki without EasyNav or RViz2:
+
+```bash
+ros2 launch easynav_playground_kobuki_worlds gazebo_sim.launch.yaml
+```
+
+```bash
+ros2 launch easynav_playground_kobuki_worlds multirobot_gazebo_sim.launch.yaml
+```
+
+To add a robot to a running simulation, use `kobuki.launch.yaml` with a `namespace` and a spawn pose (`x`, `y`, `Y`...).
+
+The simulated Kobuki publishes `/scan_raw`, `/odom`, `/joint_states` and TF, and listens on `/cmd_vel`. With `camera:=true` it also publishes `/rgbd_camera/{image,depth_image,points,camera_info}`.
+
+## Package layout
+
+| Directory | Contents |
+| --- | --- |
+| `launch/` | `gazebo_sim` (world and one Kobuki), `multirobot_gazebo_sim` (world and two Kobukis), `world` (Gazebo with the house), `kobuki` (spawns a Kobuki in a running simulation), in YAML |
+| `config/bridge/` | ROS–Gazebo bridge topics |
+| `maps/` | `home2.yaml`: occupancy grid of the house (5 cm) |
+| `worlds/`, `models/`, `photos/` | Small house world |
+
+## Authors and licensing
+
+The launchers, bridge configuration and map were developed by Francisco Martín Rico at the [Intelligent Robotics Lab](https://intelligentroboticslab.gsyc.urjc.es/) (Universidad Rey Juan Carlos), under Apache-2.0; see [LICENSE](./LICENSE).
+
+The small house world (`worlds/`, `models/`, `photos/`) comes from [aws-robomaker-small-house-world](https://github.com/IntelligentRoboticsLabs/aws-robomaker-small-house-world) (`ros2` branch), under the MIT No Attribution license; see [models/LICENSE](./models/LICENSE). Only the models the world uses were copied.
