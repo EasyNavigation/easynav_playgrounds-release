@@ -1,0 +1,15 @@
+ros-kilted-easynav-playground-tiago (0.5.1-1bookworm) bookworm; urgency=high
+
+  * Enable cpplint and copyright linters
+  * Contributors: Francisco Martín Rico
+
+ -- "Francisco Martín Rico" <fmrico@gmail.com>  Tue, 20 Oct 2026 22:00:00 -0000
+
+ros-kilted-easynav-playground-tiago (0.5.0-1bookworm) bookworm; urgency=high
+
+  * First release, in the easynav_playgrounds repository: EasyNav launchers and parameters for the PAL Robotics' TIAGo: costmap with RPP, and NavMap and Bonxai with NavMap AMCL configurations
+  * Contributors: Francisco Martín Rico, Juan Sebastián Cely Gutierrez
+
+ -- "Francisco Martín Rico" <fmrico@gmail.com>  Wed, 07 Oct 2026 22:00:00 -0000
+
+
