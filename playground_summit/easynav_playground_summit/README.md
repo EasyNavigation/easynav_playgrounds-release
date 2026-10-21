@@ -50,6 +50,7 @@ All of them plan with A* over the NavMap (`maps/excavation_urjc.navmap`).
 | `easynav_mpc.launch.yaml` | MPC | NavMap AMCL | |
 | `easynav_gps.launch.yaml` | Regulated Pure Pursuit | GPS (UKF) | `FusionLocalizer` fusing the GPS position, wheel odometry and IMU heading; no Bonxai map |
 | `easynav_navmap_dummy.launch.yaml` | — | — | Only loads and shows `maps/excavation_urjc_2.navmap` |
+| `easynav_navmap_local.launch.yaml` | — (teleop) | — | Local NavMap: rebuilt around the robot, in `base_footprint`, from the 3D laser (NavMap maps manager in local mode). Drive it with `ros2 run teleop_twist_keyboard teleop_twist_keyboard` |
 
 ### Warehouse configuration
 
@@ -64,6 +65,20 @@ ros2 launch easynav_playground_summit easynav_warehouse_amcl.launch.yaml
 | `easynav_warehouse_amcl.launch.yaml` | Regulated Pure Pursuit | NavMap AMCL | Flat NavMap from `maps/warehouse.yaml`; Bonxai `maps/warehouse.pcd` |
 
 The NavMap is flat, built from a 2D occupancy grid. Its `obstacles` filter keeps the static map and adds the points the sensors see within 3 m and below 1.2 m (`max_range`, `max_height`); the `inflation` filter (radius 2.0 m, scaling 1.5) keeps paths in the middle of the aisles. The RViz view (`rviz/easynav_warehouse.rviz`) shows the inflated layer. Localization error is about 0.15 m.
+
+### Parking garage configuration
+
+`easynav_parking_garage.launch.yaml` runs the Summit XL in a parking garage (`worlds/parking_garage.world`) with three floors stacked over the same footprint and linked by ramps:
+
+```bash
+ros2 launch easynav_playground_summit easynav_parking_garage.launch.yaml
+```
+
+| Launch file | Controller | Localizer | Maps |
+| --- | --- | --- | --- |
+| `easynav_parking_garage.launch.yaml` | Regulated Pure Pursuit | NavMap AMCL | Multi-level NavMap `maps/parking_garage.navmap`; Bonxai `maps/parking_garage_bonxai.pcd` |
+
+Both maps come from simulated 3D lidar scans of the world's collision mesh (a VLP-16 0.8 m above the ground every 2 m on floors 0-2, so hidden faces never enter the map): `maps/parking_garage.pcd` keeps one point per 0.1 m voxel (the centroid), in the map frame with z = 0 on the ground floor under the spawn point. The NavMap meshes it with `navmap_ros::from_points` at 0.4 m: floors 0, 1 and 2 are a single surface that overlaps itself in XY and connects through the ramps, so A* plans between floors; the ramps (2.9 m between their side walls) leave about 0.9 m of clearance to the robot's 0.7 m inscribed radius. The roof has no ramp in the model and is a separate, unreachable surface. The Bonxai map keeps one point per occupied 0.3 m voxel (floors, walls, pillars and ceilings). The `obstacles` filter ignores points above 1.2 m, so the ceiling of each floor is not an obstacle.
 
 ### Localization
 
