@@ -95,9 +95,9 @@ localizer_node:
     amcl:
       rt_freq: 50.0
       freq: 5.0
-      reseed_freq: 0.1
+      reseed_freq: 1.0
       plugin: easynav_navmap_localizer/AMCLLocalizer
-      downsampled_cloud_size: 10.0
+      downsampled_cloud_size: 0.3   # about the Bonxai map's voxels: enough points to tell poses apart
       num_particles: 100
       noise_translation: 0.1
       noise_rotation: 0.03
@@ -139,6 +139,10 @@ maps_manager_node:
       filters: [obstacles, inflation]
       obstacles:
         plugin: easynav_navmap_maps_manager/NavMapMapsManager/ObstaclesFilter
+        memory:                     # obstacles out of sight are remembered; rays clear them
+          enabled: true
+          p_hit: 0.55               # 3 hits in a row to mark a cell: a short tilt does not stain
+          decay_time: 10.0          # what is not seen again fades back in 10 s
         max_range: 3.0              # only nearby points (robot frame): the static map covers the rest
         max_height: 1.2             # robot height 1.0 m plus a margin (robot frame)
       # Without it the planner only sees the obstacles themselves and plans right next to them.
@@ -156,6 +160,7 @@ planner_node:
     astart:
       freq: 1.0
       plugin: easynav_navmap_planner/AStarPlanner
+      cost_weight: 3.0             # default 5: the inflation cost weighs less, fewer detours
       
 
 sensors_node:
@@ -192,6 +197,7 @@ system_node:
     # filters the 3D lidar and depth camera clouds in every cycle.
     rt_freq: 50.0
     position_tolerance: 0.3
+    height_tolerance: 0.5    # a goal on another floor or level is not reached
     angle_tolerance: 0.15
 
 recovery_node:
