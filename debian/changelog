@@ -1,8 +1,0 @@
-ros-jazzy-easynav-playground-kobuki-description (0.5.0-1bookworm) bookworm; urgency=high
-
-  * First release, in the easynav_playgrounds repository: the Kobuki (Turtlebot 2) model (URDF, meshes and controllers), without Gazebo or EasyNav dependencies
-  * Contributors: Francisco Martín Rico, Juan Sebastián Cely Gutierrez
-
- -- "Francisco Martín Rico" <fmrico@gmail.com>  Wed, 07 Oct 2026 22:00:00 -0000
-
-
