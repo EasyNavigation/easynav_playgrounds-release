@@ -3,35 +3,21 @@ Copyright 2026 Intelligent Robotics Lab
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# EasyNav PlayGrounds
+# EasyNav Kobuki Playground
 
-Complete Gazebo simulations integrated with [EasyNav](https://github.com/EasyNavigation/EasyNavigation): a robot, its worlds, their maps and ready-to-run EasyNav configurations. They are the reference configurations of EasyNav, and a good starting point for your own robot's parameters.
+EasyNav configurations for a Kobuki (Turtlebot 2) in a Gazebo Harmonic simulation of the AWS RoboMaker small house. This is the indoor reference playground of EasyNav.
 
-Each playground is split in three packages, so that the robot model and the simulation can be used without EasyNav:
+The Kobuki playground is made of three packages:
 
-| Package | Contents | Depends on |
-| --- | --- | --- |
-| `easynav_playground_<robot>_description` | The robot model: URDF, meshes and controllers | Neither Gazebo nor EasyNav |
-| `easynav_playground_<robot>_worlds` | The Gazebo simulation: worlds, their maps, and the launchers that spawn the robot with its controllers and the ROS–Gazebo bridge | Gazebo, not EasyNav |
-| `easynav_playground_<robot>` | The EasyNav configurations and launchers | EasyNav |
-
-| Directory | Robot and worlds | EasyNav configurations |
-| --- | --- | --- |
-| [`playground_kobuki`](playground_kobuki/easynav_playground_kobuki) | Kobuki (Turtlebot 2) in a small house (**indoor reference**) | Costmap (RPP, MPPI, MPC, SeReST, MH-AMCL, routes, safety mode), Simple, mapping, multirobot |
-| [`playground_summit`](playground_summit/easynav_playground_summit) | Robotnik Summit XL in an outdoor excavation and an indoor warehouse (**outdoor reference**) | NavMap and Bonxai (RPP, MPPI, MPC), GPS fusion, warehouse logistics |
-| [`playground_tiago`](playground_tiago/easynav_playground_tiago) | PAL Robotics' TIAGo in a small house | Costmap with RPP; NavMap and Bonxai with the laser and the RGBD camera |
-| [`playground_omni`](playground_omni/easynav_playground_omni) | Three- to six-wheel omnidirectional robots in two mazes | Costmap with RPP |
-
-For example, with the Kobuki:
-
-```bash
-ros2 launch easynav_playground_kobuki easynav_costmap_rpp.launch.yaml        # Gazebo, the Kobuki, EasyNav and RViz2
-ros2 launch easynav_playground_kobuki_worlds gazebo_sim.launch.yaml          # Only Gazebo and the Kobuki
-```
+| Package | Contents |
+| --- | --- |
+| `easynav_playground_kobuki_description` | The Kobuki (Turtlebot 2) model: URDF and meshes. No Gazebo, no EasyNav |
+| `easynav_playground_kobuki_worlds` | The Gazebo simulation: the small house world, its map, and the launchers that spawn one or several Kobukis with the ROS–Gazebo bridge. No EasyNav |
+| `easynav_playground_kobuki` | The EasyNav configurations and launchers |
 
 ## Supported ROS 2 distributions
 
-The playgrounds need Gazebo Harmonic or newer, so they run on Jazzy and later distributions, but not on Humble, whose Gazebo is Fortress. EasyNav itself (core and plugins) does run on Humble: only these simulations do not.
+This playground needs Gazebo Harmonic or newer, so it runs on Jazzy and later distributions, but not on Humble, whose Gazebo is Fortress. EasyNav itself (core and plugins) does run on Humble: only this simulation does not.
 
 ## Build
 
@@ -39,10 +25,96 @@ From the ROS 2 workspace root:
 
 ```bash
 rosdep install --from-paths src --ignore-src -r -y
-colcon build --symlink-install --packages-up-to easynav_playground_kobuki   # or any other playground
+colcon build --symlink-install --packages-up-to easynav_playground_kobuki
 source install/setup.bash
 ```
 
-## Licensing
+## Launch EasyNav
 
-Each package declares its licenses in its `package.xml` and explains them in its README. The EasyNav configurations and launchers are by the [Intelligent Robotics Lab](https://intelligentroboticslab.gsyc.urjc.es/) (Universidad Rey Juan Carlos), under Apache-2.0. The robot models and the worlds come from third parties under their own licenses: Yujin Robot's Kobuki (BSD-3-Clause), Robotnik's Summit XL (BSD-3-Clause), PAL Robotics' TIAGo (Apache-2.0), Yohan Prakoso's omnidirectional robots (MIT), AWS RoboMaker's small house and small warehouse (MIT-0) and the URJC excavation (GPL-3.0).
+Each `easynav_<config>.launch.yaml` starts Gazebo, the Kobuki, EasyNav with that configuration and RViz2:
+
+```bash
+ros2 launch easynav_playground_kobuki easynav_costmap_rpp.launch.yaml
+```
+
+Once RViz2 is up, send a goal with the **2D Goal Pose** tool.
+
+### Costmap configurations
+
+All of them use the `maps/home2.yaml` occupancy map.
+
+| Launch file | Controller | Localizer | Notes |
+| --- | --- | --- | --- |
+| `easynav_costmap_rpp.launch.yaml` | Regulated Pure Pursuit | AMCL | Tuned for the Kobuki footprint |
+| `easynav_costmap_rpp_mhamcl.launch.yaml` | Regulated Pure Pursuit | Multi-hypothesis AMCL | |
+| `easynav_costmap_rpp_reflex.launch.yaml` | Regulated Pure Pursuit | AMCL | For trying the collision safety reflex by hand |
+| `easynav_costmap_rpp_safe.launch.yaml` | Regulated Pure Pursuit | AMCL | Safety mode, see [below](#safety-mode) |
+| `easynav_costmap_serest.launch.yaml` | SeReST | AMCL | |
+| `easynav_costmap_mppi.launch.yaml` | MPPI | AMCL | |
+| `easynav_costmap_mpc.launch.yaml` | MPC | AMCL | |
+| `easynav_costmap_mppi_routed.launch.yaml` | MPPI | AMCL | Routes from `maps/routes_1.yaml` |
+| `easynav_routes.launch.yaml` | Regulated Pure Pursuit | AMCL | Routes from `maps/routes_1.yaml` |
+| `easynav_costmap_mapping.launch.yaml` | — | — | Builds a costmap |
+
+### Simple map configurations
+
+All of them use the `maps/home.map` simple map.
+
+| Launch file | Controller | Localizer | Notes |
+| --- | --- | --- | --- |
+| `easynav_simple.launch.yaml` | Simple | AMCL | |
+| `easynav_simple_serest.launch.yaml` | SeReST | AMCL | |
+| `easynav_simple_mapping.launch.yaml` | — | — | Builds a simple map |
+
+### Launch arguments
+
+| Argument | Default | Description |
+| --- | --- | --- |
+| `params_file` | Per launch file | EasyNav parameters file |
+| `rviz_config` | Per launch file | RViz2 configuration file |
+| `gui` | `true` | Set to `false` to run Gazebo headless |
+| `rviz` | `true` | Set to `false` to skip RViz2 |
+| `lidar_range` | `12.0` | Maximum lidar range, in meters |
+| `camera` | `false` | Enable the RGBD camera |
+
+For example, to run headless with your own parameters:
+
+```bash
+ros2 launch easynav_playground_kobuki easynav_costmap_rpp.launch.yaml gui:=false params_file:=/path/to/my.params.yaml
+```
+
+### Safety mode
+
+`easynav_costmap_rpp_safe.launch.yaml` runs EasyNav in safety mode with the process memory locked. It needs real-time limits (`rtprio` >= 80 and, for memory locking, `memlock` unlimited); otherwise EasyNav does not start. See "Real-time system setup" in the EasyNav docs.
+
+It also publishes an "all clear" safety status on `/easynav_safety_status`, standing in for a safety PLC or scanner. Launch it with `safety_channel:=false` to publish your own status, for example a protective stop.
+
+The occupancy map (`home2.yaml`) is in `easynav_playground_kobuki_worlds`; the Simple map (`maps/home.map`) and the routes (`maps/routes_1.yaml`) are EasyNav formats, so they are in this package.
+
+## Multirobot
+
+Two Kobukis, `r1` at (0, 0) and `r2` at (2, 1), each with its own EasyNav and RViz2:
+
+```bash
+ros2 launch easynav_playground_kobuki easynav_multirobot.launch.yaml
+```
+
+Each robot uses its own namespace for topics (`/r1/scan_raw`), its own TF topic (`/r1/tf`) and prefixed frames (`r1/map`, `r1/base_link`). The parameters are in `params/costmap_multirobot.params.yaml`, with one section per robot. Each section is `costmap.rpp.params.yaml` (Regulated Pure Pursuit, 0.6 m/s) with that robot's `tf_prefix` and initial pose.
+
+## Docker
+
+`docker/` builds an image with EasyNav and this playground; see [docker/README.md](./docker/README.md).
+
+## Package layout
+
+| Directory | Contents |
+| --- | --- |
+| `launch/` | EasyNav launch files, in YAML (`rviz_namespaced.launch.py` opens RViz2 for a namespaced robot) |
+| `params/` | EasyNav parameters, one file per configuration |
+| `maps/` | EasyNav-specific maps: `home.map` (Simple map) and `routes_1.yaml` (routes) |
+| `rviz/` | RViz2 configurations |
+| `docker/` | Docker image and launcher |
+
+## Authors and licensing
+
+This package was developed by Francisco Martín Rico at the [Intelligent Robotics Lab](https://intelligentroboticslab.gsyc.urjc.es/) (Universidad Rey Juan Carlos), and is licensed under Apache-2.0; see [LICENSE](./LICENSE).
