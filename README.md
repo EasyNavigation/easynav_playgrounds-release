@@ -3,35 +3,9 @@ Copyright 2026 Intelligent Robotics Lab
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# EasyNav PlayGrounds
+# EasyNav TIAGo Playground: description
 
-Complete Gazebo simulations integrated with [EasyNav](https://github.com/EasyNavigation/EasyNavigation): a robot, its worlds, their maps and ready-to-run EasyNav configurations. They are the reference configurations of EasyNav, and a good starting point for your own robot's parameters.
-
-Each playground is split in three packages, so that the robot model and the simulation can be used without EasyNav:
-
-| Package | Contents | Depends on |
-| --- | --- | --- |
-| `easynav_playground_<robot>_description` | The robot model: URDF, meshes and controllers | Neither Gazebo nor EasyNav |
-| `easynav_playground_<robot>_worlds` | The Gazebo simulation: worlds, their maps, and the launchers that spawn the robot with its controllers and the ROS–Gazebo bridge | Gazebo, not EasyNav |
-| `easynav_playground_<robot>` | The EasyNav configurations and launchers | EasyNav |
-
-| Directory | Robot and worlds | EasyNav configurations |
-| --- | --- | --- |
-| [`playground_kobuki`](playground_kobuki/easynav_playground_kobuki) | Kobuki (Turtlebot 2) in a small house (**indoor reference**) | Costmap (RPP, MPPI, MPC, SeReST, MH-AMCL, routes, safety mode), Simple, mapping, multirobot |
-| [`playground_summit`](playground_summit/easynav_playground_summit) | Robotnik Summit XL in an outdoor excavation and an indoor warehouse (**outdoor reference**) | NavMap and Bonxai (RPP, MPPI, MPC), GPS fusion, warehouse logistics |
-| [`playground_tiago`](playground_tiago/easynav_playground_tiago) | PAL Robotics' TIAGo in a small house | Costmap with RPP; NavMap and Bonxai with the laser and the RGBD camera |
-| [`playground_omni`](playground_omni/easynav_playground_omni) | Three- to six-wheel omnidirectional robots in two mazes | Costmap with RPP |
-
-For example, with the Kobuki:
-
-```bash
-ros2 launch easynav_playground_kobuki easynav_costmap_rpp.launch.yaml        # Gazebo, the Kobuki, EasyNav and RViz2
-ros2 launch easynav_playground_kobuki_worlds gazebo_sim.launch.yaml          # Only Gazebo and the Kobuki
-```
-
-## Supported ROS 2 distributions
-
-The playgrounds need Gazebo Harmonic or newer, so they run on Jazzy and later distributions, but not on Humble, whose Gazebo is Fortress. EasyNav itself (core and plugins) does run on Humble: only these simulations do not.
+The model of PAL Robotics' TIAGo used by the EasyNav playgrounds: URDF, meshes and the ros2_control controllers. It depends neither on Gazebo nor on EasyNav: `easynav_playground_tiago_worlds` simulates it, and `easynav_playground_tiago` navigates with it.
 
 ## Build
 
@@ -39,10 +13,51 @@ From the ROS 2 workspace root:
 
 ```bash
 rosdep install --from-paths src --ignore-src -r -y
-colcon build --symlink-install --packages-up-to easynav_playground_kobuki   # or any other playground
+colcon build --symlink-install --packages-up-to easynav_playground_tiago_description
 source install/setup.bash
 ```
 
-## Licensing
+To get the URDF:
 
-Each package declares its licenses in its `package.xml` and explains them in its README. The EasyNav configurations and launchers are by the [Intelligent Robotics Lab](https://intelligentroboticslab.gsyc.urjc.es/) (Universidad Rey Juan Carlos), under Apache-2.0. The robot models and the worlds come from third parties under their own licenses: Yujin Robot's Kobuki (BSD-3-Clause), Robotnik's Summit XL (BSD-3-Clause), PAL Robotics' TIAGo (Apache-2.0), Yohan Prakoso's omnidirectional robots (MIT), AWS RoboMaker's small house and small warehouse (MIT-0) and the URJC excavation (GPL-3.0).
+```bash
+xacro $(ros2 pkg prefix easynav_playground_tiago_description)/share/easynav_playground_tiago_description/urdf/tiago.urdf.xacro
+```
+
+## The TIAGo model
+
+`urdf/tiago.urdf.xacro` is PAL's TIAGo description expanded once with PAL's default configuration: base `pmb2`, arm `tiago-arm` with wrist `wrist-2010`, force/torque sensor `schunk-ft`, end effector `pal-gripper`, laser `sick-571` and camera `orbbec-astra`. It was expanded from the Gazebo Harmonic ports of PAL's packages ([Tiago-Harmonic](https://github.com/Tiago-Harmonic): `tiago_robot` 29211f4, `pmb2_robot` a9c09d2, `pal_gripper` b6eec0f), and only the meshes it uses were copied. The controller values (`config/tiago_controllers.yaml`) come from PAL's `tiago_controller_configuration`, `pmb2_controller_configuration` and `pal_gripper_controller_configuration`.
+
+Changes from PAL's model, for this simulation:
+
+- The meshes and the controllers file point to this package.
+- The head camera has a `gz_frame_id`: without it, its point cloud carried Gazebo's internal sensor name as frame.
+- The wheels' velocity command limit is the wheel joint's (10.15 rad/s, 1 m/s) instead of 1 rad/s (0.1 m/s), which made the base crawl.
+- The arm and torso start in PAL's `home` posture (`initial_value` in ros2_control), instead of tucking the arm with play_motion2 at startup.
+
+## Package layout
+
+| Directory | Contents |
+| --- | --- |
+| `urdf/` | `tiago.urdf.xacro` |
+| `meshes/` | Meshes of the base (pmb2), TIAGo and the PAL gripper |
+| `config/` | ros2_control controllers (`tiago_controllers.yaml`) |
+| `doc/` | PAL Robotics logo |
+
+## Authors and licensing
+
+This package was put together by Francisco Martín Rico at the [Intelligent Robotics Lab](https://intelligentroboticslab.gsyc.urjc.es/) (Universidad Rey Juan Carlos), and is licensed under Apache-2.0; see [LICENSE](./LICENSE).
+
+It includes third-party work under its own copyright and licenses:
+
+- **The TIAGo robot model** (`urdf/`, `meshes/`) and the values of its controllers (`config/`) are the work of [PAL Robotics](https://pal-robotics.com/): Copyright (c) 2022-2024 PAL Robotics S.L. All rights reserved. They are licensed under the Apache License 2.0 (see [LICENSE](./LICENSE)), and come from PAL's [tiago_robot](https://github.com/pal-robotics/tiago_robot), [pmb2_robot](https://github.com/pal-robotics/pmb2_robot) and [pal_gripper](https://github.com/pal-robotics/pal_gripper), through their Gazebo Harmonic ports at [Tiago-Harmonic](https://github.com/Tiago-Harmonic). TIAGo is a robot by PAL Robotics.
+
+The PAL Robotics logo below is PAL Robotics' own, used as published in its [brand guidelines](https://pal-robotics.com/es/guia-marca-logotipo/), unmodified.
+
+<p align="center">
+  <a href="https://pal-robotics.com/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="doc/pal_logo_white.svg">
+      <img src="doc/pal_logo_midnight.svg" alt="PAL Robotics" width="200">
+    </picture>
+  </a>
+</p>
