@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>easynav_playground_summit_worlds</name>
-  <version>0.5.0</version>
+  <version>0.5.1</version>
   <description>Gazebo (Harmonic or newer) simulation of a Summit XL for the EasyNav playgrounds: the URJC excavation and a small warehouse, their maps, and the launchers that spawn the Summit XL with its controllers and the ROS-Gazebo bridge.</description>
   <maintainer email="fmrico@gmail.com">Francisco Martín Rico</maintainer>
   <!-- Launchers, bridge configuration and maps -->
@@ -10,11 +10,14 @@
   <!-- URJC excavation world (worlds/urjc_excavation.world, models/urjc_excavation/), from
        urjc-excavation-world -->
   <license file="models/urjc_excavation/LICENSE">GPL-3.0-only</license>
+  <!-- Parking garage world (worlds/parking_garage*, models/parking_garage*, models/*_cube), from
+       parking-garage-world -->
+  <license file="models/parking_garage/LICENSE">GPL-3.0-only</license>
   <!-- Small warehouse world (worlds/small_warehouse.world, models/aws_robomaker_warehouse_*),
        from AWS RoboMaker's aws-robomaker-small-warehouse-world -->
   <license file="models/LICENSE-aws-robomaker">MIT-0</license>
   <author email="fmrico@gmail.com">Francisco Martín Rico</author>
-  <author>juanscelyg, github.com/juanscelyg (the URJC excavation world)</author>
+  <author>Juan Sebastián Cely Gutierrez (the URJC excavation and parking garage worlds)</author>
   <author>Amazon.com, Inc. or its affiliates (the small warehouse world)</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
