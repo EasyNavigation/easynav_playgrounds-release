@@ -1,0 +1,12 @@
+Source: ros-jazzy-easynav-playground-kobuki
+Section: misc
+Priority: optional
+Maintainer: "Francisco Martín Rico" <fmrico@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), ros-jazzy-ament-cmake, ros-jazzy-ament-lint-auto <!nocheck>, ros-jazzy-ament-lint-common <!nocheck>, ros-jazzy-ros-workspace
+Homepage: https://index.ros.org/p/easynav_playground_kobuki/#jazzy
+Standards-Version: 3.9.2
+
+Package: ros-jazzy-easynav-playground-kobuki
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3-yaml, ros-jazzy-ament-index-python, ros-jazzy-easynav-costmap-localizer, ros-jazzy-easynav-costmap-maps-manager, ros-jazzy-easynav-costmap-planner, ros-jazzy-easynav-diagnostic-recovery, ros-jazzy-easynav-interfaces, ros-jazzy-easynav-mhamcl-localizer, ros-jazzy-easynav-mpc-controller, ros-jazzy-easynav-mppi-controller, ros-jazzy-easynav-playground-kobuki-worlds, ros-jazzy-easynav-regulated-pp-controller, ros-jazzy-easynav-routes-maps-manager, ros-jazzy-easynav-serest-controller, ros-jazzy-easynav-simple-controller, ros-jazzy-easynav-simple-localizer, ros-jazzy-easynav-simple-maps-manager, ros-jazzy-easynav-simple-planner, ros-jazzy-easynav-simple-recovery, ros-jazzy-easynav-system, ros-jazzy-launch, ros-jazzy-launch-ros, ros-jazzy-launch-yaml, ros-jazzy-ros2topic, ros-jazzy-rviz2, ros-jazzy-ros-workspace
+Description: Easy Navigation playground with a Kobuki: EasyNav configurations and launchers for the Kobuki simulation (costmap with RPP, MPPI, MPC, SeReST, MH-AMCL, routes and safety mode; Simple; mapping; multirobot).
