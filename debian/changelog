@@ -1,8 +1,0 @@
-ros-jazzy-easynav-playground-summit (0.5.0-1bookworm) bookworm; urgency=high
-
-  * First release, in the easynav_playgrounds repository: EasyNav launchers and parameters for the Robotnik Summit XL: NavMap and Bonxai (RPP, MPPI, MPC), GPS fusion and warehouse configurations
-  * Contributors: Francisco Martín Rico, Juan Sebastián Cely Gutierrez
-
- -- "Francisco Martín Rico" <fmrico@gmail.com>  Wed, 07 Oct 2026 22:00:00 -0000
-
-
